@@ -1,0 +1,61 @@
+# fly.toml app configuration file generated for qdrant-on-fly on 2023-05-25T12:01:33+02:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = " "
+primary_region = " "
+
+[http_service]
+  internal_port = 6333
+  force_https = true
+  auto_start_machines = true
+  auto_stop_machines = true
+  min_machines_running = 1
+
+# [[services]]
+#   protocol = "tcp"
+#   internal_port = 6333
+
+#   [[services.ports]]
+#     port = 6333
+#     handlers = ["http"]
+
+#   [[services.tcp_checks]]
+#     interval = "15s"
+#     grace_period = "10s"
+#     restart_limit = 0
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 6334
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = "6334"
+
+  [[services.tcp_checks]]
+    interval = "15s"
+    grace_period = "10s"
+    restart_limit = 0
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 6335
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = "6335"
+
+  [[services.tcp_checks]]
+    interval = "15s"
+    grace_period = "10s"
+    restart_limit = 0
+
+[metrics]
+  port = 6333
+  path = "/metrics"
+
+[[mounts]]
+  source = "qdrant_data"
+  destination = "/data"
