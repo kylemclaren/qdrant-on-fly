@@ -20,6 +20,10 @@ This command generates a new Fly application and a related configuration file. W
 
 The cluster uses [Tailscale](https://tailscale.com/) for P2P communication and discovery. Tailscale is a private WireGuard® network that provides secure, easy-to-setup networking between servers. You'll need to to create a new Tailscale organization. The recommended approach is to create a new GitHub organization, then use that to sign-in to Tailscale.
 
+### Why not use Fly private networking or Flycast?
+
+During initial testing, I encountered some issues with Qdrant's underlying networking libraries. They didn't play nice with IPv6! Using Tailscale allows us to leverage predictable, static DNS names (thanks to [MagicDNS](https://tailscale.com/kb/1081/magicdns/)) for P2P communication. This turned out to be a great move as it additionally makes discovery a little less tricky when bootstrapping peers.
+
 ## Set Secrets
 
 This setup requires several environment variables:
