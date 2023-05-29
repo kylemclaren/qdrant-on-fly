@@ -1,5 +1,7 @@
 # https://docs.docker.com/develop/develop-images/multistage-build/#use-multi-stage-builds
 
+ARG QDRANT_VERSION=v1.2.2
+
 FROM alpine:latest as builder
 WORKDIR /app
 COPY . ./
@@ -10,9 +12,7 @@ ENV TSFILE=tailscale_1.42.0_amd64.tgz
 RUN wget https://pkgs.tailscale.com/stable/${TSFILE} && \
   tar xzf ${TSFILE} --strip-components=1
 
-ENV QDRANT_VERSION=v1.2.0
-# FROM qdrant/qdrant:${QDRANT_VERSION}
-FROM qdrant/qdrant:v1.2.2
+FROM qdrant/qdrant:${QDRANT_VERSION}
 
 # COPY ./config/config.yml /qdrant/config/production.yaml
 
