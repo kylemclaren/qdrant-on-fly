@@ -7,6 +7,8 @@ on:
   pull_request:
     branches:
       - master
+    paths-ignore:
+      - README.md
 
 jobs:
   build:
@@ -20,4 +22,4 @@ jobs:
         uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: Dockerfile
-          failure-threshold: warning
+          failure-threshold: error
