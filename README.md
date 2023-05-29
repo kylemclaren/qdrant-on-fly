@@ -35,7 +35,7 @@ Set them using `fly secrets set`
 Start by deploying one instance in your preferred region.
 
 1. `fly volumes create qdrant_data --region ord --size 10`
-2. `fly deploy --ha=false --no-publilc-ips`
+2. `fly deploy --ha=false --no-public-ips`
 3. `fly status`
 
 ## Add a New Peer
@@ -53,6 +53,8 @@ Scale the setup to another region by cloning a machine there. Now you should hav
 2. `fly status`
 
 ## Connecting
+
+### Connecting from a Client Application
 
 Fly applications within the same organization can connect to your Qdrant database using the following URI:
 
