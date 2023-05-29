@@ -1,5 +1,7 @@
 # Highly Available Qdrant Cluster on Fly.io
 
+[![Lint](https://github.com/kylemclaren/qdrant-on-fly/actions/workflows/lint.yml/badge.svg?branch=master)](https://github.com/kylemclaren/qdrant-on-fly/actions/workflows/lint.yml)
+
 [Qdrant](https://qdrant.tech/) is a search engine and database that specializes in finding similarities between vectors. It has an API that allows you to store, search, and manage vectors along with additional information. Qdrant is designed to support advanced filtering capabilities, making it useful for tasks like neural network matching, faceted search, and other applications.
 
 Qdrant is built using the Rust programming language, which ensures [fast](https://qdrant.tech/benchmarks/) and reliable performance even when dealing with a large amount of data. You can use Qdrant to transform embeddings or neural network encoders into powerful applications for tasks such as matching, searching, recommending, and more.
@@ -24,11 +26,11 @@ This setup requires several environment variables:
 
 - **QDRANT__SERVICE__API_KEY**: Qdrant supports a simple form of client authentication using a static API key. This can be used to secure your instance. The API key will need t be set via the `api_key` header in any client request to the cluster. More [here](https://qdrant.tech/documentation/guides/security/).
 - **TAILNET_DOMAIN**: Your Tailscale unique [tailnet name](https://tailscale.com/kb/1217/tailnet-name/).
-- **TAILSCALE_AUTHKEY**: Your Tailscale pre-authentication([**auth key**](https://tailscale.com/kb/1085/auth-keys/))key to let you register new nodes. Needs to be `reusable` and `ephemeral`.
+- **TAILSCALE_AUTHKEY**: Your Tailscale pre-authentication ([**auth key**](https://tailscale.com/kb/1085/auth-keys/)) key to let you register new nodes. Needs to be `reusable` and `ephemeral`.
 
 Set them using `fly secrets set`
 
-## Deploy The First Peer
+## Deploy the First Peer
 
 Start by deploying one instance in your preferred region.
 
@@ -52,9 +54,9 @@ Scale the setup to another region by cloning a machine there. Now you should hav
 
 ## Having Trouble?
 
-If you're facing difficulties or have any queries, feel free to create an issue here: https://github.com/kylemclaren/qdrant-on-fly/issues
+If you're facing difficulties or have any queries, feel free to create an issue [here](https://github.com/kylemclaren/qdrant-on-fly/issues).
 
-Alternatively, you can ask questions at the community page here: https://community.fly.io/
+Alternatively, you can ask questions at the community page [here](https://community.fly.io/).
 
 ## Contributing
 
