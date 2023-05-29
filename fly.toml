@@ -6,11 +6,14 @@
 app = " "
 primary_region = " "
 
+kill_signal = "SIGTERM"
+kill_timeout = 300
+
 [http_service]
   internal_port = 6333
   force_https = true
   auto_start_machines = true
-  auto_stop_machines = true
+  auto_stop_machines = false
   min_machines_running = 1
 
 # [[services]]
