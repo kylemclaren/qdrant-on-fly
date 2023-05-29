@@ -35,7 +35,7 @@ Set them using `fly secrets set`
 Start by deploying one instance in your preferred region.
 
 1. `fly volumes create qdrant_data --region ord --size 10`
-2. `fly deploy --ha=false`
+2. `fly deploy --ha=false --no-publilc-ips`
 3. `fly status`
 
 ## Add a New Peer
@@ -51,6 +51,24 @@ Scale the setup to another region by cloning a machine there. Now you should hav
 
 1. `fly machine clone --region jnb --select --process-group app`
 2. `fly status`
+
+## Connecting
+
+Fly applications within the same organization can connect to your Qdrant database using the following URI:
+
+```sh
+http://<fly-app-name>.internal:6333
+```
+
+### Connecting to Qdrant from Your Local Machine
+
+1. Forward the server port to your local system with [`fly proxy`](https://fly.io/docs/flyctl/proxy/):
+
+```sh
+fly proxy 6333:6333 -a <fly-app-name>
+```
+
+2. Use your favorite API testing tool (like Postman or `curl`) to connect to your Qdrant instance on the forwarded port. Be sure to set the `api_key` header to the same value that you specified for `QDRANT__SERVICE__API_KEY`
 
 ## Having Trouble?
 
