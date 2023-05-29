@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for qdrant-on-fly on 2023-05-25T12:01:33+02:00
+# fly.toml app configuration file generated for qdrant-2 on 2023-05-29T20:00:54+02:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -7,35 +7,46 @@ app = " "
 primary_region = " "
 
 kill_signal = "SIGTERM"
-kill_timeout = 300
+kill_timeout = "5m0s"
 
-[http_service]
+[env]
+  QDRANT__SERVICE__HOST= "::"
+  QDRANT__CLUSTER__ENABLED = "true"
+  QDRANT__STORAGE__SNAPSHOTS_PATH = "/data/qdrant/snapshots"
+  QDRANT__STORAGE__STORAGE_PATH = "/data/qdrant/storage"
+
+[[mounts]]
+  source = "qdrant_data"
+  destination = "/data"
+
+[[services]]
   internal_port = 6333
-  force_https = true
-  auto_start_machines = true
+  protocol = "tcp"
   auto_stop_machines = false
+  auto_start_machines = true
   min_machines_running = 1
 
-# [[services]]
-#   protocol = "tcp"
-#   internal_port = 6333
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+    force_https = false
 
-#   [[services.ports]]
-#     port = 6333
-#     handlers = ["http"]
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
 
-#   [[services.tcp_checks]]
-#     interval = "15s"
-#     grace_period = "10s"
-#     restart_limit = 0
+  [[services.tcp_checks]]
+    interval = "15s"
+    grace_period = "10s"
+    restart_limit = 0
 
 [[services]]
   protocol = "tcp"
   internal_port = 6334
 
   [[services.ports]]
+    port = 6334
     handlers = ["http"]
-    port = "6334"
 
   [[services.tcp_checks]]
     interval = "15s"
@@ -47,18 +58,10 @@ kill_timeout = 300
   internal_port = 6335
 
   [[services.ports]]
+    port = 6335
     handlers = ["http"]
-    port = "6335"
 
   [[services.tcp_checks]]
     interval = "15s"
     grace_period = "10s"
     restart_limit = 0
-
-[metrics]
-  port = 6333
-  path = "/metrics"
-
-[[mounts]]
-  source = "qdrant_data"
-  destination = "/data"
