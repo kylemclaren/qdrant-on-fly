@@ -9,14 +9,14 @@ COPY . ./
 FROM alpine:latest as tailscale
 WORKDIR /app
 ENV TSFILE=tailscale_1.42.0_amd64.tgz
-RUN wget https://pkgs.tailscale.com/stable/${TSFILE} && \
+RUN wget --progress=dot:giga https://pkgs.tailscale.com/stable/${TSFILE} && \
   tar xzf ${TSFILE} --strip-components=1
 
 FROM qdrant/qdrant:${QDRANT_VERSION}
 
 # COPY ./config/config.yml /qdrant/config/production.yaml
 
-RUN apt-get update && apt-get install ca-certificates iptables jq -y
+RUN apt-get update && apt-get install ca-certificates iptables jq --no-install-recommends -y
 RUN update-alternatives --set iptables /usr/sbin/iptables-legacy
 RUN update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
 
