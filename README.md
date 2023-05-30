@@ -8,6 +8,8 @@ Qdrant is built using the Rust programming language, which ensures [fast](https:
 
 This repository contains all the files and configuration necessary to run a Highly Available (HA) Qdrant cluster on a [Fly.io](https://fly.io/) organization's private network using Tailscale for peer-to-peer (P2P) communication and discovery. These resources are built into Docker images, allowing  smooth upgrades as new features and improvements are rolled out.
 
+___
+
 ## Prepare a New Fly.io Application
 
 Begin by creating a new Fly application in your preferred region. Execute the following commands within your fork or clone of this repository. But first, be sure to set your primary region in the `fly.toml` file.
@@ -28,7 +30,7 @@ During initial testing, I encountered some issues with Qdrant's underlying netwo
 
 This setup requires several environment variables:
 
-- **QDRANT__SERVICE__API_KEY**: Qdrant supports a simple form of client authentication using a static API key. This can be used to secure your instance. The API key will need t be set via the `api_key` header in any client request to the cluster. More [here](https://qdrant.tech/documentation/guides/security/).
+- **QDRANT__SERVICE__API_KEY**: Qdrant supports a simple form of client authentication using a static API key. The API key will need to be set via the `api_key` header in any client request to the cluster. More [here](https://qdrant.tech/documentation/guides/security/).
 - **TAILNET_DOMAIN**: Your Tailscale unique [tailnet name](https://tailscale.com/kb/1217/tailnet-name/).
 - **TAILSCALE_AUTHKEY**: Your Tailscale pre-authentication ([**auth key**](https://tailscale.com/kb/1085/auth-keys/)) key to let you register new nodes. Needs to be `reusable` and `ephemeral`.
 
@@ -66,6 +68,10 @@ Fly applications within the same organization can connect to your Qdrant databas
 http://<fly-app-name>.internal:6333
 ```
 
+### Public IP
+
+If you need your app to be publicly accessible outside of the Fly Private network or your Tailnet, you can sinply add a public IP to the Fly app and start using the Fly Proxy to connect as normal (ie. `https://<fly-app-name>.fly.dev`)
+
 ### Connecting to Qdrant from Your Local Machine
 
 1. Forward the server port to your local system with [`fly proxy`](https://fly.io/docs/flyctl/proxy/):
@@ -74,7 +80,65 @@ http://<fly-app-name>.internal:6333
 fly proxy 6333:6333 -a <fly-app-name>
 ```
 
-2. Use your favorite API testing tool (like Postman or `curl`) to connect to your Qdrant instance on the forwarded port. Be sure to set the `api_key` header to the same value that you specified for `QDRANT__SERVICE__API_KEY`
+2. Use your favorite API testing tool (like Postman or `curl`) to connect to your Qdrant instance on the forwarded port. Be sure to set the `api_key` header to the same value that you specified for `QDRANT__SERVICE__API_KEY`. Refer to the [Fly documentation](https://fly.io/docs/reference/volumes/) on volumes for more details on how to safely handle the volumes that store your vector data.
+
+```sh
+curl -H "api-key: <YOUR_API_KEY>" http://localhost:6333/cluster | jq
+```
+<details>
+<summary>Result</summary>
+<br>
+
+```json
+{
+  "result": {
+    "status": "enabled",
+    "peer_id": 3556574999046494,
+    "peers": {
+      "3556574999046494": {
+        "uri": "http://qdrant-peer-e784ee56ad1218-ord.pygmy-koi.ts.net:6335/"
+      },
+      "2310430634584339": {
+        "uri": "http://qdrant-peer-4d8940dc6ee487-ord.pygmy-koi.ts.net:6335/"
+      },
+      "187138089536499": {
+        "uri": "http://qdrant-peer-9080716a655387-jnb.pygmy-koi.ts.net:6335/"
+      }
+    },
+    "raft_info": {
+      "term": 1,
+      "commit": 3,
+      "pending_operations": 0,
+      "leader": 3556574999046494,
+      "role": "Leader",
+      "is_voter": true
+    },
+    "consensus_thread_status": {
+      "consensus_thread_status": "working",
+      "last_update": "2023-05-29T21:30:45.579649708Z"
+    },
+    "message_send_failures": {}
+  },
+  "status": "ok",
+  "time": 3.183e-05
+}
+```
+</details>
+
+### Advanced
+
+#### Data Storage
+
+By default, Qdrant data and snapshots are stored in `/data/qdrant/`. If you need to change the default storage location, you can adjust the `QDRANT__STORAGE__SNAPSHOTS_PATH` and `QDRANT__STORAGE__STORAGE_PATH` variables in the [fly.toml](./fly.toml)
+
+#### Qdrant Sharding and Replication
+
+WIP
+
+### FAQ
+
+WIP
+___
 
 ## Having Trouble?
 
