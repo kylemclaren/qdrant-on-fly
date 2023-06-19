@@ -43,11 +43,7 @@ kill_timeout = "5m0s"
 [[services]]
   protocol = "tcp"
   internal_port = 6334
-
-  [[services.ports]]
-    port = 6334
-    handlers = ["http"]
-
+  
   [[services.tcp_checks]]
     interval = "15s"
     grace_period = "10s"
@@ -56,10 +52,6 @@ kill_timeout = "5m0s"
 [[services]]
   protocol = "tcp"
   internal_port = 6335
-
-  [[services.ports]]
-    port = 6335
-    handlers = ["http"]
 
   [[services.tcp_checks]]
     interval = "15s"
