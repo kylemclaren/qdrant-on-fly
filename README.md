@@ -18,24 +18,6 @@ Begin by creating a new Fly application in your preferred region. Execute the fo
 
 This command generates a new Fly application and a related configuration file. When prompted, select `yes` to copy the existing configuration to the newly generated app.
 
-## Tailscale Integration
-
-The cluster uses [Tailscale](https://tailscale.com/) for P2P communication and discovery. Tailscale is a private WireGuard® network that provides secure, easy-to-setup networking between servers. You'll need to to create a new Tailscale organization. The recommended approach is to create a new GitHub organization, then use that to sign-in to Tailscale.
-
-### Why not use Fly private networking or Flycast?
-
-During initial testing, I encountered some issues with Qdrant's underlying networking libraries. They didn't play nice with IPv6! Using Tailscale allows us to leverage predictable, static DNS names that resolve to a unique [100.x.y.z](https://tailscale.com/kb/1015/100.x-addresses/?q=100) address on the network (thanks to [MagicDNS](https://tailscale.com/kb/1081/magicdns/)) for P2P communication. This turned out to be a great move as it additionally makes discovery a little less tricky when bootstrapping peers.
-
-## Set Secrets
-
-This setup requires several environment variables:
-
-- **QDRANT__SERVICE__API_KEY**: Qdrant supports a simple form of client authentication using a static API key. The API key will need to be set via the `api_key` header in any client request to the cluster. More [here](https://qdrant.tech/documentation/guides/security/).
-- **TAILNET_DOMAIN**: Your Tailscale unique [tailnet name](https://tailscale.com/kb/1217/tailnet-name/).
-- **TAILSCALE_AUTHKEY**: Your Tailscale pre-authentication ([**auth key**](https://tailscale.com/kb/1085/auth-keys/)) key to let you register new nodes. Needs to be `reusable` and `ephemeral`.
-
-Set them using `fly secrets set`
-
 ## Deploy the First Peer
 
 Start by deploying one instance in your preferred region.
@@ -65,7 +47,7 @@ Scale the setup to another region by cloning a machine there. Now you should hav
 Fly applications within the same organization can connect to your Qdrant database using the following URI:
 
 ```sh
-http://<fly-app-name>.internal:6333
+http://<fly-app-name>.flycast:6333
 ```
 
 ### Public IP
@@ -83,7 +65,7 @@ fly proxy 6333:6333 -a <fly-app-name>
 2. Use your favorite API testing tool (like Postman or `curl`) to connect to your Qdrant instance on the forwarded port. Be sure to set the `api_key` header to the same value that you specified for `QDRANT__SERVICE__API_KEY`. Refer to the [Fly documentation](https://fly.io/docs/reference/volumes/) on volumes for more details on how to safely handle the volumes that store your vector data.
 
 ```sh
-curl -H "api-key: <YOUR_API_KEY>" http://localhost:6333/cluster | jq
+curl -H "Content-Type: application/json" http://localhost:6333/cluster | jq
 ```
 <details>
 <summary>Result</summary>
@@ -93,34 +75,34 @@ curl -H "api-key: <YOUR_API_KEY>" http://localhost:6333/cluster | jq
 {
   "result": {
     "status": "enabled",
-    "peer_id": 3556574999046494,
+    "peer_id": 8961156852769025,
     "peers": {
-      "3556574999046494": {
-        "uri": "http://qdrant-peer-e784ee56ad1218-ord.pygmy-koi.ts.net:6335/"
+      "8961156852769025": {
+        "uri": "http://e286376be66286.vm.qdrant-6pn.internal:6335/"
       },
-      "2310430634584339": {
-        "uri": "http://qdrant-peer-4d8940dc6ee487-ord.pygmy-koi.ts.net:6335/"
+      "6238012613461344": {
+        "uri": "http://568370dc75418e.vm.qdrant-6pn.internal:6335/"
       },
-      "187138089536499": {
-        "uri": "http://qdrant-peer-9080716a655387-jnb.pygmy-koi.ts.net:6335/"
+      "2504460418660966": {
+        "uri": "http://148e722b75d789.vm.qdrant-6pn.internal:6335/"
       }
     },
     "raft_info": {
-      "term": 1,
-      "commit": 3,
+      "term": 1314,
+      "commit": 3510,
       "pending_operations": 0,
-      "leader": 3556574999046494,
+      "leader": 8961156852769025,
       "role": "Leader",
       "is_voter": true
     },
     "consensus_thread_status": {
       "consensus_thread_status": "working",
-      "last_update": "2023-05-29T21:30:45.579649708Z"
+      "last_update": "2023-06-20T22:23:48.543413978Z"
     },
     "message_send_failures": {}
   },
   "status": "ok",
-  "time": 3.183e-05
+  "time": 4.125e-05
 }
 ```
 </details>
