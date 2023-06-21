@@ -1,13 +1,9 @@
-# fly.toml app configuration file generated for qdrant-2 on 2023-05-29T20:00:54+02:00
-#
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
-
 app = " "
 primary_region = " "
 
 kill_signal = "SIGTERM"
-kill_timeout = "5m0s"
+kill_timeout = 300
 
 [env]
   QDRANT__SERVICE__HOST= "::"
@@ -19,21 +15,18 @@ kill_timeout = "5m0s"
   source = "qdrant_data"
   destination = "/data"
 
+# Expose 6333 and 6334 so that we can use Flycast in client apps
+
 [[services]]
   internal_port = 6333
   protocol = "tcp"
   auto_stop_machines = false
   auto_start_machines = true
-  min_machines_running = 1
+  min_machines_running = 3
 
   [[services.ports]]
-    port = 80
     handlers = ["http"]
-    force_https = false
-
-  [[services.ports]]
-    port = 443
-    handlers = ["tls", "http"]
+    port = 6333
 
   [[services.tcp_checks]]
     interval = "15s"
@@ -45,23 +38,15 @@ kill_timeout = "5m0s"
   internal_port = 6334
 
   [[services.ports]]
+    handlers = []
     port = 6334
-    handlers = ["http"]
-
+    tls_options = { "alpn" = ["h2"] }
+  
   [[services.tcp_checks]]
     interval = "15s"
     grace_period = "10s"
     restart_limit = 0
 
-[[services]]
-  protocol = "tcp"
-  internal_port = 6335
-
-  [[services.ports]]
-    port = 6335
-    handlers = ["http"]
-
-  [[services.tcp_checks]]
-    interval = "15s"
-    grace_period = "10s"
-    restart_limit = 0
+[metrics]
+  port = 6333
+  path = "/metrics"

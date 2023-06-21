@@ -1,28 +1,25 @@
-#!/bin/sh
+#! /bin/bash
+set -euo pipefail
 
-TAILSCALE_HOSTNAME="qdrant-peer-${FLY_ALLOC_ID}-${FLY_REGION}"
+host=$FLY_MACHINE_ID.vm.$FLY_APP_NAME.internal
 
-# Start Tailscale in the background.
-/app/tailscaled --state=mem: --socket=/var/run/tailscale/tailscaled.sock &
+this_host=$(getent ahostsv6 fly-local-6pn | head -1 | cut -d ' ' -f1)
+seed=
 
-sleep 2
+for i in $(dig +short aaaa $FLY_APP_NAME.internal)
+do
+    if [[ "$i" != "$this_host" ]]; then
+	seed=$i
+	break
+    fi
+done
 
-# Now bring up Tailscale.
-/app/tailscale up --authkey="${TAILSCALE_AUTHKEY}" --hostname="${TAILSCALE_HOSTNAME}"
-
-sleep 5
-
-# Check for any active devices starting with "qdrant".
-FIRST_PEER=$(/app/tailscale status --json | jq -r '.Peer | to_entries[] | select(.value.DNSName | startswith("qdrant-peer")) | select(.value.Online == true) | .value.DNSName' | head -1)
-
-echo "FIRST_PEER: ${FIRST_PEER}"
-
-if [ -n "$FIRST_PEER" ]; then
+if [[ "$seed" != "" ]]; then
     # If there are other active devices, use the HostName of one of them.
-    echo "Starting with bootstrap: http://${FIRST_PEER}:6335"
-    ./qdrant --bootstrap "http://${FIRST_PEER}:6335" --uri "http://${TAILSCALE_HOSTNAME}.${TAILNET_DOMAIN}:6335"
+    echo "Bootstrapping new peer..."
+    ./qdrant --bootstrap "http://[${seed}]:6335" --uri "http://${host}:6335"
 else
     # If there are no other active devices, start normally.
-    echo "Starting without bootstrap"
-    ./qdrant --uri "http://${TAILSCALE_HOSTNAME}.${TAILNET_DOMAIN}:6335"
+    echo "Starting cluster without bootstrap..."
+    ./qdrant --uri "http://${host}:6335"
 fi
