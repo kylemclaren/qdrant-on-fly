@@ -6,7 +6,7 @@
 
 Qdrant is built using the Rust programming language, which ensures [fast](https://qdrant.tech/benchmarks/) and reliable performance even when dealing with a large amount of data. You can use Qdrant to transform embeddings or neural network encoders into powerful applications for tasks such as matching, searching, recommending, and more. Notably, vector databases (Qdrant in particular) have seen a surge in popularity for their use as a vector store in combination with modern LLMs. See the [ChatGPT Retrieval Plugin](https://github.com/openai/chatgpt-retrieval-plugin/) for a good example of this.
 
-This repository contains all the files and configuration necessary to run a Highly Available (HA) Qdrant cluster on a [Fly.io](https://fly.io/) organization's private network using Tailscale for peer-to-peer (P2P) communication and discovery.
+This repository contains all the files and configuration necessary to run a Highly Available (HA) Qdrant cluster on a [Fly.io](https://fly.io/) organization's private network with peer-to-peer (P2P) communication and discovery.
 
 ___
 
@@ -52,7 +52,7 @@ http://<fly-app-name>.flycast:6333
 
 ### Public IP
 
-If you need your app to be publicly accessible outside of the Fly Private network or your Tailnet, you can simply [allocate a public IP](https://fly.io/docs/reference/services/#shared-ipv4) to the Fly app and start using the Fly Proxy to connect as normal (ie. `https://<fly-app-name>.fly.dev`)
+If you need your app to be publicly accessible outside of the Fly Private network, you can simply [allocate a public IP](https://fly.io/docs/reference/services/#shared-ipv4) to the Fly app and start using the Fly Proxy to connect as normal (ie. `https://<fly-app-name>.fly.dev`)
 
 ### Connecting to Qdrant from Your Local Machine
 
