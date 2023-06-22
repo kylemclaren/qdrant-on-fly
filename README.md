@@ -62,7 +62,7 @@ If you need your app to be publicly accessible outside of the Fly Private networ
 fly proxy 6333:6333 -a <fly-app-name>
 ```
 
-2. Use your favorite API testing tool (like Postman or `curl`) to connect to your Qdrant instance on the forwarded port. Be sure to set the `api_key` header to the same value that you specified for `QDRANT__SERVICE__API_KEY`. Refer to the [Fly documentation](https://fly.io/docs/reference/volumes/) on volumes for more details on how to safely handle the volumes that store your vector data.
+2. Use your favorite API testing tool (like Postman or `curl`) to connect to your Qdrant instance on the forwarded port. Refer to the [Fly documentation](https://fly.io/docs/reference/volumes/) on volumes for more details on how to safely handle the volumes that store your vector data.
 
 ```sh
 curl -H "Content-Type: application/json" http://localhost:6333/cluster | jq
@@ -106,6 +106,8 @@ curl -H "Content-Type: application/json" http://localhost:6333/cluster | jq
 }
 ```
 </details>
+
+Head over to http://localhost:6333/dashboard to see the new Qdrant dashbaord and interact with your data there.
 
 ## Advanced Usage
 
