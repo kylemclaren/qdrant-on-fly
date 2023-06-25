@@ -10,21 +10,13 @@ This repository contains all the files and configuration necessary to run a High
 
 ___
 
-## Prepare a New Fly.io Application
+## Prepare a New Fly.io Application and Deploy the First Peer
 
-Begin by creating a new Fly application in your preferred region. Execute the following commands within your fork or clone of this repository. But first, be sure to set your primary region in the `fly.toml` file.
+Begin by creating a new Fly application in your preferred region. Execute the following commands within your fork or clone of this repository. But first, be sure to set your primary region (and app name) in the `fly.toml` file.
 
-### `fly launch --no-deploy`
+### `fly launch --ha=false --no-public-ips`
 
-This command generates a new Fly application and a related configuration file. When prompted, select `yes` to copy the existing configuration to the newly generated app.
-
-## Deploy the First Peer
-
-Start by deploying one instance in your preferred region.
-
-1. `fly volumes create qdrant_data --region ord --size 10`
-2. `fly deploy --ha=false --no-public-ips`
-3. `fly status`
+This command creates a new Fly application with one runnning machine and an attached volume. When prompted, select `yes` to copy the existing configuration to the newly generated app. Do not create a PostgreSQL database or Upstash Redis instance.
 
 ## Add a New Peer
 
@@ -53,6 +45,9 @@ http://<fly-app-name>.flycast:6333
 ### Public IP
 
 If you need your app to be publicly accessible outside of the Fly Private network, you can simply [allocate a public IP](https://fly.io/docs/reference/services/#shared-ipv4) to the Fly app and start using the Fly Proxy to connect as normal (ie. `https://<fly-app-name>.fly.dev`)
+
+> **Warning**
+> If you do this, be sure to set the `QDRANT__SERVICE__API_KEY` secret.
 
 ### Connecting to Qdrant from Your Local Machine
 
@@ -131,6 +126,8 @@ ___
 ## Having Trouble?
 
 If you're facing difficulties or have any queries, feel free to create an issue [here](https://github.com/kylemclaren/qdrant-on-fly/issues).
+
+It is recommended to enable DEBUG logging before filing an issue: `fly secrets set QDRANT__DEBUG=true QDRANT__LOG_LEVEL=DEBUG`
 
 Alternatively, you can ask questions at the community page [here](https://community.fly.io/).
 
