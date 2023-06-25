@@ -14,7 +14,11 @@ ___
 
 Begin by creating a new Fly application in your preferred region. Execute the following commands within your fork or clone of this repository. But first, be sure to set your primary region (and app name) in the `fly.toml` file.
 
-### `fly launch --no-public-ips`
+Using the [Fly CLI](https://fly.io/docs/flyctl/) run the following:
+
+```
+fly launch --no-public-ips
+````
 
 This command creates a new Fly application with one runnning machine and an attached volume. When prompted, select `yes` to copy the existing configuration to the newly generated app. Do not create a PostgreSQL database or Upstash Redis instance.
 
