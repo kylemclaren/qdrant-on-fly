@@ -17,7 +17,7 @@ Begin by creating a new Fly application in your preferred region. Execute the fo
 Using the [Fly CLI](https://fly.io/docs/flyctl/) run the following:
 
 ```
-fly launch --no-public-ips
+fly launch --no-public-ips --from https://github.com/kylemclaren/qdrant-on-fly
 ````
 
 This command creates a new Fly application with one runnning machine and an attached volume. When prompted, select `yes` to copy the existing configuration to the newly generated app. Do not create a PostgreSQL database or Upstash Redis instance.
@@ -26,14 +26,14 @@ This command creates a new Fly application with one runnning machine and an atta
 
 Expand the cluster by cloning the first machine. Currently, `fly scale count` does not support scaling Machines with persistent storage volumes. We'll use 'fly machine clone' to scale our cluster.
 
-1. `fly machine clone --region ord --select --process-group app`
+1. `fly machine clone --region ord --select`
 2. `fly status`
 
 ## Add a Peer in Another Region
 
 Scale the setup to another region by cloning a machine there. Now you should have two peers in `ord` and another in `jnb`.
 
-1. `fly machine clone --region jnb --select --process-group app`
+1. `fly machine clone --region jnb --select`
 2. `fly status`
 
 ## Connecting
@@ -44,6 +44,12 @@ Fly applications within the same organization can connect to your Qdrant databas
 
 ```sh
 http://<fly-app-name>.flycast:6333
+```
+
+First, you'll need to allocate a private [Flycast](https://fly.io/docs/networking/private-networking/#flycast-private-fly-proxy-services) IP address to your app. You can do this by running the following command:
+
+```sh
+fly ips allocate-v6 --private
 ```
 
 ### Public IP
