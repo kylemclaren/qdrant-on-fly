@@ -1,52 +1,58 @@
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-app = " "
-primary_region = " "
-
-kill_signal = "SIGTERM"
-kill_timeout = 300
+app = ''
+primary_region = ''
+kill_signal = 'SIGTERM'
+kill_timeout = '5m0s'
 
 [env]
-  QDRANT__SERVICE__HOST= "::"
-  QDRANT__CLUSTER__ENABLED = "true"
-  QDRANT__STORAGE__SNAPSHOTS_PATH = "/data/qdrant/snapshots"
-  QDRANT__STORAGE__STORAGE_PATH = "/data/qdrant/storage"
+  QDRANT__CLUSTER__ENABLED = 'true'
+  QDRANT__SERVICE__HOST = '::'
+  QDRANT__STORAGE__SNAPSHOTS_PATH = '/data/qdrant/snapshots'
+  QDRANT__STORAGE__STORAGE_PATH = '/data/qdrant/storage'
 
 [[mounts]]
-  source = "qdrant_data"
-  destination = "/data"
-
-# Expose 6333 and 6334 so that we can use Flycast in client apps
+  source = 'qdrant_data'
+  destination = '/data'
 
 [[services]]
+  protocol = 'tcp'
   internal_port = 6333
-  protocol = "tcp"
   auto_stop_machines = false
   auto_start_machines = true
-  min_machines_running = 3
+  min_machines_running = 0
 
   [[services.ports]]
-    handlers = ["http"]
     port = 6333
+    handlers = ['http']
 
-  [[services.tcp_checks]]
-    interval = "15s"
-    grace_period = "10s"
-    restart_limit = 0
+  [[services.http_checks]]
+    interval = 10000
+    grace_period = "5s"
+    method = "get"
+    path = "/healthz"
+    protocol = "http"
+    timeout = 2000
+    tls_skip_verify = false
+
 
 [[services]]
-  protocol = "tcp"
+  protocol = 'tcp'
   internal_port = 6334
 
   [[services.ports]]
-    handlers = []
     port = 6334
-    tls_options = { "alpn" = ["h2"] }
-  
-  [[services.tcp_checks]]
-    interval = "15s"
-    grace_period = "10s"
-    restart_limit = 0
 
-[metrics]
+    [services.ports.tls_options]
+      alpn = ['h2']
+
+  [[services.tcp_checks]]
+    interval = '15s'
+    grace_period = '10s'
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+
+[[metrics]]
   port = 6333
-  path = "/metrics"
+  path = '/metrics'
